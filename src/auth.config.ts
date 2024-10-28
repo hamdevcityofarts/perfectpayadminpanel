@@ -1,25 +1,44 @@
-import type { NextAuthConfig } from 'next-auth';
-import { setAuthToken } from './tokenStore'; // Importation du gestionnaire de token
-import { refreshToken } from './services';
+import type { NextAuthConfig } from "next-auth";
 
 export const authConfig: NextAuthConfig = {
   pages: {
-    signIn: '/authentication',
+    signIn: "/authentication",
   },
-  
- 
+
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
-      const isOnDashboard = nextUrl.pathname.startsWith('/');
-      if (isOnDashboard) {
-        if (isLoggedIn) return true;
-        return false; // Redirect unauthenticated users to login page
-      } else if (isLoggedIn) {
-        return Response.redirect(new URL('/', nextUrl));
-      }
-      return true;
+
+      return isLoggedIn;
     },
+    jwt({ token, user }) {
+      if (user) {
+        const u = user as unknown as any;
+
+        return {
+          ...token,
+          id: u.id,
+          phone_number: u.phone_number,
+          language: u.language,
+        };
+      }
+      return token;
+    },
+    session({ session, token }) {
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          id: token.id,
+          phone_number: token.phone_number,
+          language: token.language,
+        },
+      };
+    },
+  },
+
+  session: {
+    strategy: "jwt",
   },
 
   providers: [

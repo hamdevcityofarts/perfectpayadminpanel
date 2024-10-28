@@ -1,27 +1,36 @@
-'use client'
+"use client";
 
-import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
+import { authenticate } from "@/app/lib/actions";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { authenticate } from '@/app/lib/actions';
-
 
 const Profile = () => {
+  const router = useRouter();
+  const { data } = useSession();
+
+  if (data) router.push("/");
+
   const [phoneNumber, setPhoneNumber] = useState("");
   const [pin, setPin] = useState("");
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/";
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     // Logic for form submission here (e.g., API call)
-    const fd = new FormData()
-    fd.append('phone', phoneNumber)
-    fd.append('pin', pin)
-    authenticate(fd)
-    console.log("PIN:", pin);
-    console.log("Phone Number:", phoneNumber);
-    authenticate ? window.location.href = "/" : window.location.href = "/authenticate" 
+    const fd = new FormData();
+    fd.append("phone", phoneNumber);
+    fd.append("pin", pin);
+
+    const response = await authenticate(fd);
+
+    if (!response) {
+      window.location.href = callbackUrl;
+    }
   };
-  
+
   return (
     <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm ">
@@ -32,7 +41,7 @@ const Profile = () => {
           alt="Logo"
           className="sm:mx-auto sm:w-full sm:max-w-sm"
         />
-        <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
+        <h2 className="text-gray-900 mt-10 text-center text-2xl font-bold leading-9 tracking-tight">
           Sign in to your account
         </h2>
       </div>
@@ -42,7 +51,7 @@ const Profile = () => {
           <div>
             <label
               htmlFor="phoneNumber"
-              className="block text-sm font-medium leading-6 text-gray-900"
+              className="text-gray-900 block text-sm font-medium leading-6"
             >
               Phone Number
             </label>
@@ -52,10 +61,10 @@ const Profile = () => {
                 name="phoneNumber"
                 type="tel"
                 autoComplete="tel"
-                required
+                // required
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
-                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                className="text-gray-900 ring-gray-300 placeholder:text-gray-400 block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
               />
             </div>
           </div>
@@ -64,7 +73,7 @@ const Profile = () => {
             <div className="flex items-center justify-between">
               <label
                 htmlFor="pin"
-                className="block text-sm font-medium leading-6 text-gray-900"
+                className="text-gray-900 block text-sm font-medium leading-6"
               >
                 PIN
               </label>
@@ -83,10 +92,10 @@ const Profile = () => {
                 name="pin"
                 type="password"
                 autoComplete="current-password"
-                required
+                // required
                 value={pin}
                 onChange={(e) => setPin(e.target.value)}
-                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                className="text-gray-900 ring-gray-300 placeholder:text-gray-400 block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
               />
             </div>
           </div>

@@ -1,14 +1,10 @@
-"use client";
-
+import { auth } from "@/auth";
 import ECommerce from "@/components/Dashboard/E-commerce";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
-import TableTwo from "@/components/Tables/Login";
-import React from "react";
 
+export default async function Home() {
+  const user = await auth();
 
-export default function Home() {
-
-  
   // const { data: session, status } = useSession();
 
   // if (status === "loading") {
@@ -18,7 +14,7 @@ export default function Home() {
   // if (status === "unauthenticated") {
   //   return <TableTwo />;  // Redirige vers le formulaire de login si l'utilisateur n'est pas authentifié
   // }
- 
+
   // Si l'utilisateur est authentifié, affiche la page avec le layout
   return (
     <DefaultLayout>

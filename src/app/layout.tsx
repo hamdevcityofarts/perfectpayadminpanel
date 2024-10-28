@@ -1,10 +1,11 @@
 "use client";
-import "jsvectormap/dist/jsvectormap.css";
-import "flatpickr/dist/flatpickr.min.css";
+import Loader from "@/components/common/Loader";
 import "@/css/satoshi.css";
 import "@/css/style.css";
+import "flatpickr/dist/flatpickr.min.css";
+import "jsvectormap/dist/jsvectormap.css";
+import { SessionProvider } from "next-auth/react";
 import React, { useEffect, useState } from "react";
-import Loader from "@/components/common/Loader";
 
 export default function RootLayout({
   children,
@@ -21,12 +22,14 @@ export default function RootLayout({
   }, []);
 
   return (
-    <html lang="en">
-      <body suppressHydrationWarning={true}>
-        <div className="dark:bg-boxdark-2 dark:text-bodydark">
-          {loading ? <Loader /> : children}
-        </div>
-      </body>
-    </html>
+    <SessionProvider>
+      <html lang="en">
+        <body suppressHydrationWarning={true}>
+          <div className="dark:bg-boxdark-2 dark:text-bodydark">
+            {loading ? <Loader /> : children}
+          </div>
+        </body>
+      </html>
+    </SessionProvider>
   );
 }
