@@ -34,10 +34,8 @@ export async function getUserConnect(phone: string, pin: string) {
       setAuthToken(data.access_token);
       return {
         ...data.user,
-        tokens: {
-          accessToken: data.access_token,
-          refreshToken: data.refresh_token,
-        },
+        accessToken: data.access_token,
+        refreshToken: data.refresh_token,
       };
     }
 
